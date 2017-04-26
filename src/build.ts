@@ -6,20 +6,20 @@ export function buildProject(callback: () => void) {
     executeCommand("tsc", ["-p", projectPath], callback);
 }
 
-export function buildEngine(callback: () => void) {
+export function buildCadence(callback: () => void) {
     let projectPath = process.cwd();
-    let configFile = path.join(projectPath, "engine.json");
+    let configFile = path.join(projectPath, "cadence.json");
     let config = fs.readJSONSync(configFile);
-    let enginePath = config.engine;
-    executeCommand("tsc", ["-p", enginePath], () => {
-        let source = path.join(enginePath, "out");
-        let target = path.join(projectPath, 'engine');
+    let cadencePath = config.cadence;
+    executeCommand("tsc", ["-p", cadencePath], () => {
+        let source = path.join(cadencePath, "out");
+        let target = path.join(projectPath, 'cadence');
         fs.copy(source, target, callback);
     });
 }
 
 function executeCommand(command: string, args: string[], callback: () => void) {
-    let child_process = cp.spawn(command, args);
+    let child_process = cp.exec(command, args);
     child_process.stdout.addListener("data", data => {
         console.log(data.toString())
     })
@@ -32,7 +32,7 @@ function executeCommand(command: string, args: string[], callback: () => void) {
 }
 
 export function buildAll() {
-    buildEngine(function () {
+    buildCadence(function () {
         buildProject(function () {
 
         });

@@ -1,26 +1,27 @@
 "use strict";
-var cp = require('child_process');
-var fs = require('fs-extra');
-var path = require('path');
+Object.defineProperty(exports, "__esModule", { value: true });
+var cp = require("child_process");
+var fs = require("fs-extra");
+var path = require("path");
 function buildProject(callback) {
     var projectPath = process.cwd();
     executeCommand("tsc", ["-p", projectPath], callback);
 }
 exports.buildProject = buildProject;
-function buildEngine(callback) {
+function buildCadence(callback) {
     var projectPath = process.cwd();
-    var configFile = path.join(projectPath, "engine.json");
+    var configFile = path.join(projectPath, "cadence.json");
     var config = fs.readJSONSync(configFile);
-    var enginePath = config.engine;
-    executeCommand("tsc", ["-p", enginePath], function () {
-        var source = path.join(enginePath, "out");
-        var target = path.join(projectPath, 'engine');
+    var cadencePath = config.cadence;
+    executeCommand("tsc", ["-p", cadencePath], function () {
+        var source = path.join(cadencePath, "out");
+        var target = path.join(projectPath, 'cadence');
         fs.copy(source, target, callback);
     });
 }
-exports.buildEngine = buildEngine;
+exports.buildCadence = buildCadence;
 function executeCommand(command, args, callback) {
-    var child_process = cp.spawn(command, args);
+    var child_process = cp.exec(command, args);
     child_process.stdout.addListener("data", function (data) {
         console.log(data.toString());
     });
@@ -32,7 +33,7 @@ function executeCommand(command, args, callback) {
     });
 }
 function buildAll() {
-    buildEngine(function () {
+    buildCadence(function () {
         buildProject(function () {
         });
     });
